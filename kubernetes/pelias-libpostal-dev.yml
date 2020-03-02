@@ -1,0 +1,62 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: pelias-libpostal
+spec:
+  ports:
+  - port: 4400
+    targetPort: 4400
+    name: pelias-libpostal-service-port
+    protocol: TCP
+  selector:
+    app: pelias-libpostal
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pelias-libpostal
+  labels:
+    app: pelias-libpostal
+    update: auto
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: pelias-libpostal
+  template:
+    metadata:
+      labels:
+        app: pelias-libpostal
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: Exists
+              topologyKey: kubernetes.io/hostname
+      containers:
+      - name: pelias-libpostal
+        image: registry.mnt.ee/peatusee/pelias-libpostal:latest
+        imagePullPolicy: Always
+        securityContext:
+          allowPrivilegeEscalation: false
+        ports:
+        - containerPort: 4400
+        env:
+        - name: HOST
+          value: "0.0.0.0"
+        - name: PORT
+          value: "4300"
+      imagePullSecrets:
+      - name: peatusee
+

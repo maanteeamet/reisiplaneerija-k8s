@@ -1,0 +1,66 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: rt-estonia-vehicles-service
+spec:
+  ports:
+  - port: 10004
+    targetPort: 10004
+    name: rt-estonia-vehicles-service-service-port
+    protocol: TCP
+  selector:
+    app: rt-estonia-vehicles-service
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rt-estonia-vehicles-service
+  labels:
+    app: rt-estonia-vehicles-service
+    update: auto
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: rt-estonia-vehicles-service
+  template:
+    metadata:
+      labels:
+        app: rt-estonia-vehicles-service
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: Exists
+              topologyKey: kubernetes.io/hostname
+      containers:
+      - name: rt-estonia-vehicles-service
+        image: registry.mnt.ee/peatusee/rt-estonia-vehicles-service:latest
+        imagePullPolicy: Always
+        securityContext:
+          allowPrivilegeEscalation: false
+        ports:
+        - containerPort: 10004
+        env:
+        - name: OTPURL
+          value: "http://opentripplanner-estonia:8080/otp/routers/estonia/index/graphql"
+        - name: MQTTCLIENTURL
+          value: "mqtt://mosquitto-server:1883"
+        - name: MQTTCLIENTUSER
+          value: "publisher"
+        - name: MQTTCLIENTPASS
+          value: "sHalLnoTpaSS"
+      imagePullSecrets:
+      - name: peatusee
+

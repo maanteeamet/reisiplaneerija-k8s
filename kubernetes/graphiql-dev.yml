@@ -1,0 +1,79 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: graphiql
+spec:
+  ports:
+  - port: 8080
+    targetPort: 8080
+    name: graphiql-service-port
+    protocol: TCP
+  selector:
+    app: graphiql
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: graphiql
+  labels:
+    app: graphiql
+    update: auto
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: graphiql
+  template:
+    metadata:
+      labels:
+        app: graphiql
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: Exists
+              topologyKey: kubernetes.io/hostname
+      containers:
+      - name: graphiql
+        image: hsldevcom/graphiql
+        imagePullPolicy: Always
+        securityContext:
+          allowPrivilegeEscalation: false
+        ports:
+        - containerPort: 8080
+        readinessProbe:
+          periodSeconds: 10
+          timeoutSeconds: 10
+          failureThreshold: 2
+          httpGet:
+            port: 8080
+            path: "/graphiql/hsl"
+        livenessProbe:
+          initialDelaySeconds: 60
+          periodSeconds: 60
+          timeoutSeconds: 10
+          failureThreshold: 2
+          httpGet:
+            port: 8080
+            path: "/graphiql/hsl"
+        env:
+        - name: URL_PREFIX
+          value: "http://api.uus.peatus.ee"
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "200m"
+          limits:
+            memory: "64Mi"
+            cpu: "1000m"    

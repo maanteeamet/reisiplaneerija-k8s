@@ -1,0 +1,62 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: pelias-pip
+spec:
+  ports:
+  - port: 4200
+    targetPort: 4200
+    name: pelias-pip-service-port
+    protocol: TCP
+  selector:
+    app: pelias-pip
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pelias-pip
+  labels:
+    app: pelias-pip
+    update: auto
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: pelias-pip
+  template:
+    metadata:
+      labels:
+        app: pelias-pip
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: Exists
+              topologyKey: kubernetes.io/hostname
+      containers:
+      - name: pelias-pip
+        image: registry.mnt.ee/peatusee/pelias-pip:latest
+        imagePullPolicy: Always
+        securityContext:
+          allowPrivilegeEscalation: false
+        ports:
+        - containerPort: 4200
+        env:
+        - name: HOST
+          value: "0.0.0.0"
+        - name: PORT
+          value: "4200"
+      imagePullSecrets:
+      - name: peatusee
+

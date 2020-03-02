@@ -1,0 +1,52 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: hslalert
+spec:
+  ports:
+  - port: 8080
+    targetPort: 8080
+    name: hslalert-service-port
+    protocol: TCP
+  selector:
+    app: hslalert
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hslalert
+  labels:
+    app: hslalert
+    update: auto
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: hslalert
+  template:
+    metadata:
+      labels:
+        app: hslalert
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: Exists
+              topologyKey: kubernetes.io/hostname
+      containers:
+      - name: hslalert
+        image: hsldevcom/hslalert
+        imagePullPolicy: Always
+        securityContext:
+          allowPrivilegeEscalation: false

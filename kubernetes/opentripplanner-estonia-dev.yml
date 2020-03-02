@@ -1,0 +1,79 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: opentripplanner-estonia
+spec:
+  ports:
+  - port: 8080
+    targetPort: 8080
+    name: opentripplanner-estonia-service-port
+    protocol: TCP
+  selector:
+    app: opentripplanner-estonia
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: opentripplanner-estonia
+  labels:
+    app: opentripplanner-estonia
+    update: auto
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: opentripplanner-estonia
+  template:
+    metadata:
+      labels:
+        app: opentripplanner-estonia
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: Exists
+              topologyKey: kubernetes.io/hostname
+      containers:
+      - name: opentripplanner-estonia
+        image: registry.mnt.ee/peatusee/opentripplanner:latest
+        imagePullPolicy: Always
+        securityContext:
+          allowPrivilegeEscalation: false
+        ports:
+        - containerPort: 8080
+        readinessProbe:
+          periodSeconds: 5
+          timeoutSeconds: 10
+          failureThreshold: 2
+          httpGet:
+            port: 8080
+            path: /
+        livenessProbe:
+          initialDelaySeconds: 150
+          periodSeconds: 10
+          failureThreshold: 5
+          timeoutSeconds: 10
+          httpGet:
+            port: 8080
+            path: /
+        env:
+        - name: ROUTER_DATA_CONTAINER_URL
+          value: "http://opentripplanner-data-con-estonia:8080" 
+        - name: ROUTER_NAME
+          value: "estonia"
+        - name: JAVA_OPTS
+          value: "-Xmx7G -Xms7G -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:G1ReservePercent=10"
+      imagePullSecrets:
+      - name: peatusee
+

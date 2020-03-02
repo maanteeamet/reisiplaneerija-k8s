@@ -1,0 +1,61 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: pelias-interpolation
+spec:
+  ports:
+  - port: 4300
+    targetPort: 4300
+    name: pelias-interpolation-service-port
+    protocol: TCP
+  selector:
+    app: pelias-interpolation
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pelias-interpolation
+  labels:
+    app: pelias-interpolation
+    update: auto
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: pelias-interpolation
+  template:
+    metadata:
+      labels:
+        app: pelias-interpolation
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: Exists
+              topologyKey: kubernetes.io/hostname
+      containers:
+      - name: pelias-interpolation
+        image: registry.mnt.ee/peatusee/pelias-interpolation:latest
+        imagePullPolicy: Always
+        securityContext:
+          allowPrivilegeEscalation: false
+        ports:
+        - containerPort: 4300
+        env:
+        - name: HOST
+          value: "0.0.0.0"
+        - name: PORT
+          value: "4300"
+      imagePullSecrets:
+      - name: peatusee
