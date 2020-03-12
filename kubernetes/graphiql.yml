@@ -69,7 +69,7 @@ spec:
             path: "/graphiql/hsl"
         env:
         - name: URL_PREFIX
-          value: "http://api.uus.peatus.ee"
+          value: "http://api.ENVIROMENT.peatus.ee"
         resources:
           requests:
             memory: "64Mi"

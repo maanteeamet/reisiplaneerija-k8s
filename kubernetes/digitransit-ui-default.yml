@@ -71,21 +71,21 @@ spec:
         - name: CONFIG
           value: "estonia"
         - name: API_URL
-          value: "https://api.testing.peatus.ee"
+          value: "https://api.ENVIROMENT.peatus.ee"
         - name: ASSET_URL
-          value: "https://api.testing.peatus.ee/ui/v1/estonia"
+          value: "https://api.ENVIROMENT.peatus.ee/ui/v1/estonia"
         - name: MAP_URL
-          value: "https://api.testing.peatus.ee"
+          value: "https://api.ENVIROMENT.peatus.ee"
         - name: NODE_OPTS
           value: "--max_old_space_size=1000"
         - name: RELAY_FETCH_TIMEOUT
           value: "3000"
         - name: OTP_URL
-          value: "https://api.testing.peatus.ee/routing/v1/routers/estonia/"
+          value: "https://api.ENVIROMENT.peatus.ee/routing/v1/routers/estonia/"
         - name: GEOCODING_BASE_URL
-          value: "https://api.testing.peatus.ee/geocoding/v1"
+          value: "https://api.ENVIROMENT.peatus.ee/geocoding/v1"
         - name: VEHICLES_URL
-          value: "wss://mqtt.testing.peatus.ee:443"
+          value: "wss://mqtt.ENVIROMENT.peatus.ee:443"
         - name: PIWIK_ADDRESS
           value: ""
         - name: PIWIK_ID
