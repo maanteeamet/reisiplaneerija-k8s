@@ -5,7 +5,7 @@ metadata:
 spec:
   ports:
   - port: 18080
-    targetPort: 18080
+    targetPort: 3333
     name: gtfs-rt-server-service-port
     protocol: TCP
   selector:
@@ -51,7 +51,7 @@ spec:
         securityContext:
           allowPrivilegeEscalation: false
         ports:
-        - containerPort: 18080
+        - containerPort: 3333
         env:
         - name: OTP_URL
           value: "http://opentripplanner-estonia:8080/otp/routers/estonia/index/graphql"
