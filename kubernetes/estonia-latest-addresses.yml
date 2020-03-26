@@ -1,0 +1,60 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: estonia-latest-addresses
+spec:
+  ports:
+  - port: 8080
+    targetPort: 8080
+    name: estonia-latest-addresses-service-port
+    protocol: TCP
+  selector:
+    app: estonia-latest-addresses
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: estonia-latest-addresses
+  labels:
+    app: estonia-latest-addresses
+    update: auto
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: estonia-latest-addresses
+  template:
+    metadata:
+      labels:
+        app: estonia-latest-addresses
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: Exists
+              topologyKey: kubernetes.io/hostname
+      containers:
+      - name: estonia-latest-addresses
+        image: registry.mnt.ee/peatusee/estonia-latest-addresses:latest
+        imagePullPolicy: Always
+        command:
+        - npm
+        args:
+        - start
+        securityContext:
+          allowPrivilegeEscalation: false
+        ports:
+        - containerPort: 8080
+      imagePullSecrets:
+      - name: peatusee
