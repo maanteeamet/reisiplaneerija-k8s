@@ -1,0 +1,60 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: parkandride-overpass-proxy
+spec:
+  ports:
+  - port: 8080
+    targetPort: 8080
+    name: parkandride-overpass-proxy-service-port
+    protocol: TCP
+  selector:
+    app: parkandride-overpass-proxy
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: parkandride-overpass-proxy
+  labels:
+    app: parkandride-overpass-proxy
+    update: auto
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: parkandride-overpass-proxy
+  template:
+    metadata:
+      labels:
+        app: parkandride-overpass-proxy
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: Exists
+              topologyKey: kubernetes.io/hostname
+      containers:
+      - name: parkandride-overpass-proxy
+        image: registry.mnt.ee/peatusee/parkandride-overpass-proxy:latest
+        imagePullPolicy: Always
+        command:
+        - npm
+        args:
+        - start
+        securityContext:
+          allowPrivilegeEscalation: false
+        ports:
+        - containerPort: 8080
+      imagePullSecrets:
+      - name: peatusee
