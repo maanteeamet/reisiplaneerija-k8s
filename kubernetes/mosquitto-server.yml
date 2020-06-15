@@ -57,6 +57,21 @@ spec:
         ports: 
         - containerPort: 1883
         - containerPort: 9001
+        ports:
+        - containerPort: 8080
+        readinessProbe:
+          periodSeconds: 5
+          timeoutSeconds: 10
+          failureThreshold: 2
+          tcpSocket:
+            port: 1883
+        livenessProbe:
+          initialDelaySeconds: 150
+          periodSeconds: 10
+          failureThreshold: 5
+          timeoutSeconds: 10
+          tcpSocket:
+            port: 1883
       imagePullSecrets:
       - name: peatusee
 

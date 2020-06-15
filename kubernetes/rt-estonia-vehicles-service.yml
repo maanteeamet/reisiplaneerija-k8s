@@ -52,6 +52,19 @@ spec:
           allowPrivilegeEscalation: false
         ports:
         - containerPort: 10004
+        readinessProbe:
+          periodSeconds: 5
+          timeoutSeconds: 10
+          failureThreshold: 2
+          tcpSocket:
+            port: 10004
+        livenessProbe:
+          initialDelaySeconds: 150
+          periodSeconds: 10
+          failureThreshold: 5
+          timeoutSeconds: 10
+          tcpSocket:
+            port: 10004
         env:
         - name: OTPURL
           value: "http://opentripplanner-estonia:8080/otp/routers/estonia/index/graphql"

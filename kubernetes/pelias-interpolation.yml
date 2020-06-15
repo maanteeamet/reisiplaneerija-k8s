@@ -52,6 +52,19 @@ spec:
           allowPrivilegeEscalation: false
         ports:
         - containerPort: 4300
+        readinessProbe:
+          periodSeconds: 5
+          timeoutSeconds: 10
+          failureThreshold: 2
+          tcpSocket:
+            port: 4300
+        livenessProbe:
+          initialDelaySeconds: 150
+          periodSeconds: 10
+          failureThreshold: 5
+          timeoutSeconds: 10
+          tcpSocket:
+            port: 4300
         env:
         - name: HOST
           value: "0.0.0.0"
