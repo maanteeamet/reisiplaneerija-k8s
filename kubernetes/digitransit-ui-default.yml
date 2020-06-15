@@ -54,14 +54,14 @@ spec:
         - containerPort: 8080
         readinessProbe:
           httpGet:
-            path: /
+            path: /proxy/js/main.js
             port: 8080
           periodSeconds: 5
           timeoutSeconds: 10
           failureThreshold: 2
         livenessProbe:
           httpGet:
-            path: /
+            path: /proxy/js/main.js
             port: 8080
           initialDelaySeconds: 150
           periodSeconds: 10
