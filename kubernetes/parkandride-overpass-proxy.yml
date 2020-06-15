@@ -62,7 +62,7 @@ spec:
           failureThreshold: 2
           httpGet:
             port: 8080
-            path: /map/v1/estonia-parkandride-bikestop-map/13/4662/2405.pbf
+            path: /
         livenessProbe:
           initialDelaySeconds: 150
           periodSeconds: 10
@@ -70,6 +70,6 @@ spec:
           timeoutSeconds: 10
           httpGet:
             port: 8080
-            path: /map/v1/estonia-parkandride-bikestop-map/13/4662/2405.pbf
+            path: /
       imagePullSecrets:
       - name: peatusee
