@@ -53,14 +53,14 @@ spec:
         ports:
         - containerPort: 10004
         readinessProbe:
-          initialDelaySeconds: 250
+          initialDelaySeconds: 350
           periodSeconds: 5
           timeoutSeconds: 10
           failureThreshold: 2
           tcpSocket:
             port: 10004
         livenessProbe:
-          initialDelaySeconds: 250
+          initialDelaySeconds: 350
           periodSeconds: 10
           failureThreshold: 5
           timeoutSeconds: 10
