@@ -16,6 +16,7 @@ kubectl apply -f pelias-api.yml --namespace $NAMESPACE
 kubectl apply -f digitransit-ui-default.yml --namespace $NAMESPACE
 kubectl apply -f pelias-interpolation.yml --namespace $NAMESPACE
 kubectl apply -f digitransit-proxy.yml --namespace $NAMESPACE
+kubectl apply -f amenities-overpass-proxy.yml --namespace $NAMESPACE
 kubectl apply -f navigator-server.yml --namespace $NAMESPACE
 kubectl apply -f mosquitto-server.yml --namespace $NAMESPACE
 kubectl apply -f gtfs-rt-server.yml --namespace $NAMESPACE
