@@ -79,7 +79,7 @@ spec:
                 name: fontstack-password
                 key: fontstack-password
           - name: NODE_OPTS
-            value: "--max_old_space_size=2048 --optimize_for_size --max_executable_size=2048 --stack_size=2048 --harmony"
+            value: "--max_old_space_size=2048 --optimize_for_size --stack_size=2048 --harmony"
           - name: MAPSERVER_URL
             value: "hsl-map-server:8080/map/v1/"
         resources:
